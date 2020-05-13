@@ -1,3 +1,4 @@
+.history
 *.swp
 bazel-*
 compile_commands.json
