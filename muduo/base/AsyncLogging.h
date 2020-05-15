@@ -1,3 +1,11 @@
+/*
+ * @Author: Mengsen.Wang
+ * @Date: 2020-05-15 10:17:36
+ * @Last Modified by: Mengsen.Wang
+ * @Last Modified time: 2020-05-15 10:33:45
+ * @Description: a bridge between front end and back end
+ *               append for front end, threadfunc for back end
+ */
 // Use of this source code is governed by a BSD-style license
 // that can be found in the License file.
 //

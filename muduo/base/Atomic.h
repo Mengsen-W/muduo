@@ -6,23 +6,17 @@
 #ifndef MUDUO_BASE_ATOMIC_H
 #define MUDUO_BASE_ATOMIC_H
 
-#include "muduo/base/noncopyable.h"
-
 #include <stdint.h>
 
-namespace muduo
-{
+#include "muduo/base/noncopyable.h"
 
-namespace detail
-{
-template<typename T>
-class AtomicIntegerT : noncopyable
-{
+namespace muduo {
+
+namespace detail {
+template <typename T>
+class AtomicIntegerT : noncopyable {
  public:
-  AtomicIntegerT()
-    : value_(0)
-  {
-  }
+  AtomicIntegerT() : value_(0) {}
 
   // uncomment if you need copying and assignment
   //
@@ -36,50 +30,29 @@ class AtomicIntegerT : noncopyable
   //   return *this;
   // }
 
-  T get()
-  {
+  T get() {
     // in gcc >= 4.7: __atomic_load_n(&value_, __ATOMIC_SEQ_CST)
     return __sync_val_compare_and_swap(&value_, 0, 0);
   }
 
-  T getAndAdd(T x)
-  {
+  T getAndAdd(T x) {
     // in gcc >= 4.7: __atomic_fetch_add(&value_, x, __ATOMIC_SEQ_CST)
     return __sync_fetch_and_add(&value_, x);
   }
 
-  T addAndGet(T x)
-  {
-    return getAndAdd(x) + x;
-  }
+  T addAndGet(T x) { return getAndAdd(x) + x; }
 
-  T incrementAndGet()
-  {
-    return addAndGet(1);
-  }
+  T incrementAndGet() { return addAndGet(1); }
 
-  T decrementAndGet()
-  {
-    return addAndGet(-1);
-  }
+  T decrementAndGet() { return addAndGet(-1); }
 
-  void add(T x)
-  {
-    getAndAdd(x);
-  }
+  void add(T x) { getAndAdd(x); }
 
-  void increment()
-  {
-    incrementAndGet();
-  }
+  void increment() { incrementAndGet(); }
 
-  void decrement()
-  {
-    decrementAndGet();
-  }
+  void decrement() { decrementAndGet(); }
 
-  T getAndSet(T newValue)
-  {
+  T getAndSet(T newValue) {
     // in gcc >= 4.7: __atomic_exchange_n(&value_, newValue, __ATOMIC_SEQ_CST)
     return __sync_lock_test_and_set(&value_, newValue);
   }
