@@ -1,3 +1,11 @@
+/*
+ * @Author: Mengsen.Wang
+ * @Date: 2020-05-16 10:13:48
+ * @Last Modified by: Mengsen.Wang
+ * @Last Modified time: 2020-05-16 10:14:12
+ * @Description: manger all of file
+ */
+
 // Use of this source code is governed by a BSD-style license
 // that can be found in the License file.
 
@@ -8,29 +16,24 @@
 #ifndef MUDUO_BASE_FILEUTIL_H
 #define MUDUO_BASE_FILEUTIL_H
 
-#include "muduo/base/noncopyable.h"
-#include "muduo/base/StringPiece.h"
 #include <sys/types.h>  // for off_t
 
-namespace muduo
-{
-namespace FileUtil
-{
+#include "muduo/base/StringPiece.h"
+#include "muduo/base/noncopyable.h"
+
+namespace muduo {
+namespace FileUtil {
 
 // read small file < 64KB
-class ReadSmallFile : noncopyable
-{
+class ReadSmallFile : noncopyable {
  public:
   ReadSmallFile(StringArg filename);
   ~ReadSmallFile();
 
   // return errno
-  template<typename String>
-  int readToString(int maxSize,
-                   String* content,
-                   int64_t* fileSize,
-                   int64_t* modifyTime,
-                   int64_t* createTime);
+  template <typename String>
+  int readToString(int maxSize, String* content, int64_t* fileSize,
+                   int64_t* modifyTime, int64_t* createTime);
 
   /// Read at maxium kBufferSize into buf_
   // return errno
@@ -38,7 +41,7 @@ class ReadSmallFile : noncopyable
 
   const char* buffer() const { return buf_; }
 
-  static const int kBufferSize = 64*1024;
+  static const int kBufferSize = 64 * 1024;
 
  private:
   int fd_;
@@ -47,21 +50,16 @@ class ReadSmallFile : noncopyable
 };
 
 // read the file content, returns errno if error happens.
-template<typename String>
-int readFile(StringArg filename,
-             int maxSize,
-             String* content,
-             int64_t* fileSize = NULL,
-             int64_t* modifyTime = NULL,
-             int64_t* createTime = NULL)
-{
+template <typename String>
+int readFile(StringArg filename, int maxSize, String* content,
+             int64_t* fileSize = NULL, int64_t* modifyTime = NULL,
+             int64_t* createTime = NULL) {
   ReadSmallFile file(filename);
   return file.readToString(maxSize, content, fileSize, modifyTime, createTime);
 }
 
 // not thread safe
-class AppendFile : noncopyable
-{
+class AppendFile : noncopyable {
  public:
   explicit AppendFile(StringArg filename);
 
@@ -74,11 +72,10 @@ class AppendFile : noncopyable
   off_t writtenBytes() const { return writtenBytes_; }
 
  private:
-
   size_t write(const char* logline, size_t len);
 
   FILE* fp_;
-  char buffer_[64*1024];
+  char buffer_[64 * 1024];
   off_t writtenBytes_;
 };
 
@@ -86,4 +83,3 @@ class AppendFile : noncopyable
 }  // namespace muduo
 
 #endif  // MUDUO_BASE_FILEUTIL_H
-
