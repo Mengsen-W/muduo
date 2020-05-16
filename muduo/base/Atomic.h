@@ -1,3 +1,11 @@
+/*
+ * @Author: Mengsen.Wang
+ * @Date: 2020-05-16 17:57:42
+ * @Last Modified by: Mengsen.Wang
+ * @Last Modified time: 2020-05-16 18:01:50
+ * @Description: atomic
+ */
+
 // Use of this source code is governed by a BSD-style license
 // that can be found in the License file.
 //
@@ -37,6 +45,7 @@ class AtomicIntegerT : noncopyable {
 
   T getAndAdd(T x) {
     // in gcc >= 4.7: __atomic_fetch_add(&value_, x, __ATOMIC_SEQ_CST)
+    // thread safety'+'
     return __sync_fetch_and_add(&value_, x);
   }
 

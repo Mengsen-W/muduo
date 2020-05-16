@@ -1,3 +1,11 @@
+/*
+ * @Author: Mengsen.Wang
+ * @Date: 2020-05-16 18:04:43
+ * @Last Modified by: Mengsen.Wang
+ * @Last Modified time: 2020-05-16 18:11:03
+ * @Description: Bounded blocking circular buffer
+ */
+
 // Use of this source code is governed by a BSD-style license
 // that can be found in the License file.
 //
@@ -6,32 +14,24 @@
 #ifndef MUDUO_BASE_BOUNDEDBLOCKINGQUEUE_H
 #define MUDUO_BASE_BOUNDEDBLOCKINGQUEUE_H
 
+#include <assert.h>
+
+#include <boost/circular_buffer.hpp>
+
 #include "muduo/base/Condition.h"
 #include "muduo/base/Mutex.h"
 
-#include <boost/circular_buffer.hpp>
-#include <assert.h>
+namespace muduo {
 
-namespace muduo
-{
-
-template<typename T>
-class BoundedBlockingQueue : noncopyable
-{
+template <typename T>
+class BoundedBlockingQueue : noncopyable {
  public:
   explicit BoundedBlockingQueue(int maxSize)
-    : mutex_(),
-      notEmpty_(mutex_),
-      notFull_(mutex_),
-      queue_(maxSize)
-  {
-  }
+      : mutex_(), notEmpty_(mutex_), notFull_(mutex_), queue_(maxSize) {}
 
-  void put(const T& x)
-  {
+  void put(const T& x) {
     MutexLockGuard lock(mutex_);
-    while (queue_.full())
-    {
+    while (queue_.full()) {
       notFull_.wait();
     }
     assert(!queue_.full());
@@ -39,11 +39,9 @@ class BoundedBlockingQueue : noncopyable
     notEmpty_.notify();
   }
 
-  void put(T&& x)
-  {
+  void put(T&& x) {
     MutexLockGuard lock(mutex_);
-    while (queue_.full())
-    {
+    while (queue_.full()) {
       notFull_.wait();
     }
     assert(!queue_.full());
@@ -51,11 +49,9 @@ class BoundedBlockingQueue : noncopyable
     notEmpty_.notify();
   }
 
-  T take()
-  {
+  T take() {
     MutexLockGuard lock(mutex_);
-    while (queue_.empty())
-    {
+    while (queue_.empty()) {
       notEmpty_.wait();
     }
     assert(!queue_.empty());
@@ -65,35 +61,31 @@ class BoundedBlockingQueue : noncopyable
     return front;
   }
 
-  bool empty() const
-  {
+  bool empty() const {
     MutexLockGuard lock(mutex_);
     return queue_.empty();
   }
 
-  bool full() const
-  {
+  bool full() const {
     MutexLockGuard lock(mutex_);
     return queue_.full();
   }
 
-  size_t size() const
-  {
+  size_t size() const {
     MutexLockGuard lock(mutex_);
     return queue_.size();
   }
 
-  size_t capacity() const
-  {
+  size_t capacity() const {
     MutexLockGuard lock(mutex_);
     return queue_.capacity();
   }
 
  private:
-  mutable MutexLock          mutex_;
-  Condition                  notEmpty_ GUARDED_BY(mutex_);
-  Condition                  notFull_ GUARDED_BY(mutex_);
-  boost::circular_buffer<T>  queue_ GUARDED_BY(mutex_);
+  mutable MutexLock mutex_;
+  Condition notEmpty_ GUARDED_BY(mutex_);
+  Condition notFull_ GUARDED_BY(mutex_);
+  boost::circular_buffer<T> queue_ GUARDED_BY(mutex_);
 };
 
 }  // namespace muduo

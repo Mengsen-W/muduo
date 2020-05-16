@@ -1,3 +1,11 @@
+/*
+ * @Author: Mengsen.Wang
+ * @Date: 2020-05-16 18:14:41
+ * @Last Modified by:   Mengsen.Wang
+ * @Last Modified time: 2020-05-16 18:14:41
+ * @Description: condition class
+ */
+
 // Use of this source code is governed by a BSD-style license
 // that can be found in the License file.
 //
@@ -6,29 +14,21 @@
 #ifndef MUDUO_BASE_CONDITION_H
 #define MUDUO_BASE_CONDITION_H
 
-#include "muduo/base/Mutex.h"
-
 #include <pthread.h>
 
-namespace muduo
-{
+#include "muduo/base/Mutex.h"
 
-class Condition : noncopyable
-{
+namespace muduo {
+
+class Condition : noncopyable {
  public:
-  explicit Condition(MutexLock& mutex)
-    : mutex_(mutex)
-  {
+  explicit Condition(MutexLock& mutex) : mutex_(mutex) {
     MCHECK(pthread_cond_init(&pcond_, NULL));
   }
 
-  ~Condition()
-  {
-    MCHECK(pthread_cond_destroy(&pcond_));
-  }
+  ~Condition() { MCHECK(pthread_cond_destroy(&pcond_)); }
 
-  void wait()
-  {
+  void wait() {
     MutexLock::UnassignGuard ug(mutex_);
     MCHECK(pthread_cond_wait(&pcond_, mutex_.getPthreadMutex()));
   }
@@ -36,15 +36,9 @@ class Condition : noncopyable
   // returns true if time out, false otherwise.
   bool waitForSeconds(double seconds);
 
-  void notify()
-  {
-    MCHECK(pthread_cond_signal(&pcond_));
-  }
+  void notify() { MCHECK(pthread_cond_signal(&pcond_)); }
 
-  void notifyAll()
-  {
-    MCHECK(pthread_cond_broadcast(&pcond_));
-  }
+  void notifyAll() { MCHECK(pthread_cond_broadcast(&pcond_)); }
 
  private:
   MutexLock& mutex_;

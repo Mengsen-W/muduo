@@ -1,3 +1,11 @@
+/*
+ * @Author: Mengsen.Wang
+ * @Date: 2020-05-16 18:19:58
+ * @Last Modified by: Mengsen.Wang
+ * @Last Modified time: 2020-05-16 18:20:30
+ * @Description: count in order to wake up
+ */
+
 // Use of this source code is governed by a BSD-style license
 // that can be found in the License file.
 //
@@ -9,13 +17,10 @@
 #include "muduo/base/Condition.h"
 #include "muduo/base/Mutex.h"
 
-namespace muduo
-{
+namespace muduo {
 
-class CountDownLatch : noncopyable
-{
+class CountDownLatch : noncopyable {
  public:
-
   explicit CountDownLatch(int count);
 
   void wait();
