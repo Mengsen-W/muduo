@@ -2,7 +2,7 @@
  * @Author: Mengsen.Wang
  * @Date: 2020-05-16 17:37:29
  * @Last Modified by: Mengsen.Wang
- * @Last Modified time: 2020-05-16 17:38:13
+ * @Last Modified time: 2020-05-17 16:52:52
  * @Description: format log streams
  */
 // Use of this source code is governed by a BSD-style license
@@ -54,13 +54,11 @@ template <typename T>
 size_t convert(char buf[], T value) {
   T i = value;
   char* p = buf;
-  ss do {
+  do {
     int lsd = static_cast<int>(i % 10);
     i /= 10;
     *p++ = zero[lsd];
-  }
-  while (i != 0)
-    ;
+  } while (i != 0);
 
   if (value < 0) {
     *p++ = '-';

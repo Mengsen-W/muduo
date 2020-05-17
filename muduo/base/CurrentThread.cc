@@ -25,11 +25,18 @@ __thread int t_tidStringLength = 6;
 __thread const char* t_threadName = "unknown";
 static_assert(std::is_same<int, pid_t>::value, "pid_t should be int");
 
+/**
+ * @Brief: recorder context
+ * @Param: bool demangle
+ * @Return: string
+ */
 string stackTrace(bool demangle) {
   string stack;
   const int max_frames = 200;
   void* frame[max_frames];
+  // retrieves the current thread's call stack
   int nptrs = ::backtrace(frame, max_frames);
+  // convert the information obtained from the backtrace
   char** strings = ::backtrace_symbols(frame, nptrs);
   if (strings) {
     size_t len = 256;
@@ -52,6 +59,7 @@ string stackTrace(bool demangle) {
         if (left_par && plus) {
           *plus = '\0';
           int status = 0;
+          //? maybe transforming into origin c++ source
           char* ret =
               abi::__cxa_demangle(left_par + 1, demangled, &len, &status);
           *plus = '+';

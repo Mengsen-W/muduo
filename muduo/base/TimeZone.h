@@ -1,3 +1,10 @@
+/*
+ * @Author: Mengsen.Wang
+ * @Date: 2020-05-17 17:02:09
+ * @Last Modified by:   Mengsen.Wang
+ * @Last Modified time: 2020-05-17 17:02:09
+ * @Description time zone
+ */
 // Use of this source code is governed by a BSD-style license
 // that can be found in the License file.
 //
@@ -6,25 +13,24 @@
 #ifndef MUDUO_BASE_TIMEZONE_H
 #define MUDUO_BASE_TIMEZONE_H
 
-#include "muduo/base/copyable.h"
-#include <memory>
 #include <time.h>
 
-namespace muduo
-{
+#include <memory>
+
+#include "muduo/base/copyable.h"
+
+namespace muduo {
 
 // TimeZone for 1970~2030
-class TimeZone : public muduo::copyable
-{
+class TimeZone : public muduo::copyable {
  public:
   explicit TimeZone(const char* zonefile);
   TimeZone(int eastOfUtc, const char* tzname);  // a fixed timezone
-  TimeZone() = default;  // an invalid timezone
+  TimeZone() = default;                         // an invalid timezone
 
   // default copy ctor/assignment/dtor are Okay.
 
-  bool valid() const
-  {
+  bool valid() const {
     // 'explicit operator bool() const' in C++11
     return static_cast<bool>(data_);
   }
@@ -37,13 +43,12 @@ class TimeZone : public muduo::copyable
   // timegm(3)
   static time_t fromUtcTime(const struct tm&);
   // year in [1900..2500], month in [1..12], day in [1..31]
-  static time_t fromUtcTime(int year, int month, int day,
-                            int hour, int minute, int seconds);
+  static time_t fromUtcTime(int year, int month, int day, int hour, int minute,
+                            int seconds);
 
   struct Data;
 
  private:
-
   std::shared_ptr<Data> data_;
 };
 

@@ -1,3 +1,11 @@
+/*
+ * @Author: Mengsen.Wang
+ * @Date: 2020-05-17 11:35:54
+ * @Last Modified by:   Mengsen.Wang
+ * @Last Modified time: 2020-05-17 11:35:54
+ * @Description: single class
+ */
+
 // Use of this source code is governed by a BSD-style license
 // that can be found in the License file.
 //
@@ -6,56 +14,51 @@
 #ifndef MUDUO_BASE_SINGLETON_H
 #define MUDUO_BASE_SINGLETON_H
 
-#include "muduo/base/noncopyable.h"
-
 #include <assert.h>
 #include <pthread.h>
-#include <stdlib.h> // atexit
+#include <stdlib.h>  // atexit
 
-namespace muduo
-{
+#include "muduo/base/noncopyable.h"
 
-namespace detail
-{
+namespace muduo {
+
+namespace detail {
 // This doesn't detect inherited member functions!
 // http://stackoverflow.com/questions/1966362/sfinae-to-check-for-inherited-member-functions
-template<typename T>
-struct has_no_destroy
-{
-  template <typename C> static char test(decltype(&C::no_destroy));
-  template <typename C> static int32_t test(...);
+template <typename T>
+struct has_no_destroy {
+  template <typename C>
+  static char test(decltype(&C::no_destroy));
+  template <typename C>
+  static int32_t test(...);
   const static bool value = sizeof(test<T>(0)) == 1;
 };
 }  // namespace detail
 
-template<typename T>
-class Singleton : noncopyable
-{
+template <typename T>
+class Singleton : noncopyable {
  public:
   Singleton() = delete;
   ~Singleton() = delete;
 
-  static T& instance()
-  {
+  static T& instance() {
     pthread_once(&ponce_, &Singleton::init);
     assert(value_ != NULL);
     return *value_;
   }
 
  private:
-  static void init()
-  {
+  static void init() {
     value_ = new T();
-    if (!detail::has_no_destroy<T>::value)
-    {
+    if (!detail::has_no_destroy<T>::value) {
       ::atexit(destroy);
     }
   }
 
-  static void destroy()
-  {
+  static void destroy() {
     typedef char T_must_be_complete_type[sizeof(T) == 0 ? -1 : 1];
-    T_must_be_complete_type dummy; (void) dummy;
+    T_must_be_complete_type dummy;
+    (void)dummy;
 
     delete value_;
     value_ = NULL;
@@ -63,13 +66,13 @@ class Singleton : noncopyable
 
  private:
   static pthread_once_t ponce_;
-  static T*             value_;
+  static T* value_;
 };
 
-template<typename T>
+template <typename T>
 pthread_once_t Singleton<T>::ponce_ = PTHREAD_ONCE_INIT;
 
-template<typename T>
+template <typename T>
 T* Singleton<T>::value_ = NULL;
 
 }  // namespace muduo

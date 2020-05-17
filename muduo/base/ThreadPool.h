@@ -6,35 +6,31 @@
 #ifndef MUDUO_BASE_THREADPOOL_H
 #define MUDUO_BASE_THREADPOOL_H
 
+#include <deque>
+#include <vector>
+
 #include "muduo/base/Condition.h"
 #include "muduo/base/Mutex.h"
 #include "muduo/base/Thread.h"
 #include "muduo/base/Types.h"
 
-#include <deque>
-#include <vector>
+namespace muduo {
 
-namespace muduo
-{
-
-class ThreadPool : noncopyable
-{
+class ThreadPool : noncopyable {
  public:
-  typedef std::function<void ()> Task;
+  typedef std::function<void()> Task;
 
   explicit ThreadPool(const string& nameArg = string("ThreadPool"));
   ~ThreadPool();
 
   // Must be called before start().
   void setMaxQueueSize(int maxSize) { maxQueueSize_ = maxSize; }
-  void setThreadInitCallback(const Task& cb)
-  { threadInitCallback_ = cb; }
+  void setThreadInitCallback(const Task& cb) { threadInitCallback_ = cb; }
 
   void start(int numThreads);
   void stop();
 
-  const string& name() const
-  { return name_; }
+  const string& name() const { return name_; }
 
   size_t queueSize() const;
 

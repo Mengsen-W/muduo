@@ -1,3 +1,11 @@
+/*
+ * @Author: Mengsen.Wang
+ * @Date: 2020-05-17 11:35:13
+ * @Last Modified by:   Mengsen.Wang
+ * @Last Modified time: 2020-05-17 11:35:13
+ * @Description: zip log file
+ */
+
 // Use of this source code is governed by a BSD-style license
 // that can be found in the License file.
 //
@@ -5,32 +13,24 @@
 
 #pragma once
 
-#include "muduo/base/StringPiece.h"
-#include "muduo/base/noncopyable.h"
 #include <zlib.h>
 
-namespace muduo
-{
+#include "muduo/base/StringPiece.h"
+#include "muduo/base/noncopyable.h"
 
-class GzipFile : noncopyable
-{
+namespace muduo {
+
+class GzipFile : noncopyable {
  public:
-  GzipFile(GzipFile&& rhs) noexcept
-    : file_(rhs.file_)
-  {
-    rhs.file_ = NULL;
-  }
+  GzipFile(GzipFile&& rhs) noexcept : file_(rhs.file_) { rhs.file_ = NULL; }
 
-  ~GzipFile()
-  {
-    if (file_)
-    {
+  ~GzipFile() {
+    if (file_) {
       ::gzclose(file_);
     }
   }
 
-  GzipFile& operator=(GzipFile&& rhs) noexcept
-  {
+  GzipFile& operator=(GzipFile&& rhs) noexcept {
     swap(rhs);
     return *this;
   }
@@ -41,11 +41,14 @@ class GzipFile : noncopyable
   bool setBuffer(int size) { return ::gzbuffer(file_, size) == 0; }
 #endif
 
-  // return the number of uncompressed bytes actually read, 0 for eof, -1 for error
+  // return the number of uncompressed bytes actually read, 0 for eof, -1 for
+  // error
   int read(void* buf, int len) { return ::gzread(file_, buf, len); }
 
   // return the number of uncompressed bytes actually written
-  int write(StringPiece buf) { return ::gzwrite(file_, buf.data(), buf.size()); }
+  int write(StringPiece buf) {
+    return ::gzwrite(file_, buf.data(), buf.size());
+  }
 
   // number of uncompressed bytes
   off_t tell() const { return ::gztell(file_); }
@@ -57,31 +60,24 @@ class GzipFile : noncopyable
 
   // int flush(int f) { return ::gzflush(file_, f); }
 
-  static GzipFile openForRead(StringArg filename)
-  {
+  static GzipFile openForRead(StringArg filename) {
     return GzipFile(::gzopen(filename.c_str(), "rbe"));
   }
 
-  static GzipFile openForAppend(StringArg filename)
-  {
+  static GzipFile openForAppend(StringArg filename) {
     return GzipFile(::gzopen(filename.c_str(), "abe"));
   }
 
-  static GzipFile openForWriteExclusive(StringArg filename)
-  {
+  static GzipFile openForWriteExclusive(StringArg filename) {
     return GzipFile(::gzopen(filename.c_str(), "wbxe"));
   }
 
-  static GzipFile openForWriteTruncate(StringArg filename)
-  {
+  static GzipFile openForWriteTruncate(StringArg filename) {
     return GzipFile(::gzopen(filename.c_str(), "wbe"));
   }
 
  private:
-  explicit GzipFile(gzFile file)
-    : file_(file)
-  {
-  }
+  explicit GzipFile(gzFile file) : file_(file) {}
 
   gzFile file_;
 };
